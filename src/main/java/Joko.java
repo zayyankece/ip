@@ -52,6 +52,37 @@ public class Joko {
                     System.out.println("Please type a valid input: <command> <task number>");
                 }
 
+            } else if (command.equals("todo") || command.equals("deadline") || command.equals("event")) {
+                try {
+                    Task newTask;
+
+                    if (command.equals("todo")) {
+                        String desc = input.substring(5).trim();
+                        newTask = new ToDo(desc);
+                    } else if (command.equals("deadline")) {
+                        String[] deadlineParts = input.substring(9).split(" /by", 2);
+                        String desc = deadlineParts[0].trim();
+                        String by = deadlineParts[1].trim();
+                        newTask = new Deadline(desc, by);
+                    } else {
+                        String[] eventPart1 = input.substring(6).split(" /from ", 2);
+                        String desc = eventPart1[0].trim();
+                        String[] eventPart2 = eventPart1[1].split(" /to ", 2);
+                        String from = eventPart2[0].trim();
+                        String to = eventPart2[1].trim();
+                        newTask = new Event(desc, from, to);
+                    }
+
+                    taskList[taskCount] = newTask;
+                    taskCount++;
+                    System.out.println("Got it. I've added this task:\n  " + newTask);
+                    System.out.println("Now you have " + taskCount+ " tasks in the list.");
+
+                } catch (Exception e) {
+                    System.out.println("Please type a valid input");
+                }
+
+
             } else {
                 taskList[taskCount] = new Task(input);
                 taskCount++;
@@ -80,6 +111,50 @@ public class Joko {
         @Override
         public String toString() {
             return getStatus() + desc;
+        }
+    }
+
+    static class Deadline extends Task {
+        protected String by;
+
+        public Deadline(String desc, String by) {
+            super(desc);
+            this.by = by;
+        }
+
+        @Override
+        public String toString() {
+            return "[D]" + super.toString() +
+                    "(by: " + by + ") ";
+        }
+    }
+
+    static class ToDo extends Task {
+        public ToDo(String desc) {
+            super(desc);
+        }
+
+        @Override
+        public String toString() {
+            return "[T]" + super.toString();
+        }
+    }
+
+    static class Event extends Task {
+        protected String from;
+        protected String to;
+
+        public Event(String desc, String from, String to) {
+            super(desc);
+            this.from = from;
+            this.to = to;
+        }
+
+        @Override
+        public String toString() {
+            return "[E]" + super.toString() +
+                    "(from: " + from +
+                    " to: " + to + ")";
         }
     }
 }
