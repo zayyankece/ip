@@ -75,8 +75,10 @@ public class Joko {
 
                     taskList[taskCount] = newTask;
                     taskCount++;
+                    System.out.println("____________________________________________________________");
                     System.out.println("Got it. I've added this task:\n  " + newTask);
                     System.out.println("Now you have " + taskCount+ " tasks in the list.");
+                    System.out.println("____________________________________________________________");
 
                 } catch (Exception e) {
                     System.out.println("Please type a valid input");

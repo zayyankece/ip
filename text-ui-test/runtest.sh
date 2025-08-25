@@ -20,11 +20,16 @@ then
 fi
 
 # run the program, feed commands from input.txt file and redirect the output to the ACTUAL.TXT
-java -classpath ../bin Duke < input.txt > ACTUAL.TXT
+java -classpath ../bin Joko < input.txt > ACTUAL.TXT
 
-# convert to UNIX format
-cp EXPECTED.TXT EXPECTED-UNIX.TXT
-dos2unix ACTUAL.TXT EXPECTED-UNIX.TXT
+## convert to UNIX format
+#cp EXPECTED.TXT EXPECTED-UNIX.TXT
+#dos2unix ACTUAL.TXT EXPECTED-UNIX.TXT
+
+# convert both files to UNIX format and remove trailing spaces
+sed -i '' 's/[[:space:]]*$//' ACTUAL.TXT
+sed -i '' 's/[[:space:]]*$//' EXPECTED.TXT
+dos2unix ACTUAL.TXT EXPECTED.TXT
 
 # compare the output to the expected output
 diff ACTUAL.TXT EXPECTED-UNIX.TXT
