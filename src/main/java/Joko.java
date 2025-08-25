@@ -49,41 +49,57 @@ public class Joko {
                         System.out.println("____________________________________________________________");
                     }
                 } catch (Exception e) {
-                    System.out.println("Please type a valid input: <command> <task number>");
+                    System.out.println("Please type a valid input: <mark/unmark> <task number>");
                 }
 
             } else if (command.equals("todo") || command.equals("deadline") || command.equals("event")) {
-                try {
-                    Task newTask;
+                Task newTask = null;
 
-                    if (command.equals("todo")) {
+                if (command.equals("todo")) {
+                    try {
                         String desc = input.substring(5).trim();
+                        if (desc.isEmpty()) {
+                            throw new IllegalArgumentException("Todo description cannot be empty!");
+                        }
                         newTask = new ToDo(desc);
-                    } else if (command.equals("deadline")) {
-                        String[] deadlineParts = input.substring(9).split(" /by", 2);
-                        String desc = deadlineParts[0].trim();
-                        String by = deadlineParts[1].trim();
-                        newTask = new Deadline(desc, by);
-                    } else {
-                        String[] eventPart1 = input.substring(6).split(" /from ", 2);
-                        String desc = eventPart1[0].trim();
-                        String[] eventPart2 = eventPart1[1].split(" /to ", 2);
-                        String from = eventPart2[0].trim();
-                        String to = eventPart2[1].trim();
-                        newTask = new Event(desc, from, to);
+                    } catch (Exception e) {
+                        System.out.println("Error adding Todo: " + e.getMessage());
                     }
+                } else if (command.equals("deadline")) {
+                    try {
+                        String[] parts = input.substring(9).split(" /by", 2);
+                        if (parts.length < 2 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
+                            throw new IllegalArgumentException("Deadline must have a description and a /by date/time.");
+                        }
+                        newTask = new Deadline(parts[0].trim(), parts[1].trim());
+                    } catch (Exception e) {
+                        System.out.println("Error adding Deadline: " + e.getMessage());
+                    }
+                } else if (command.equals("event")) {
+                    try {
+                        String[] part1 = input.substring(6).split(" /from ", 2);
+                        if (part1.length < 2) {
+                            throw new IllegalArgumentException("Event must have a description and a /from start time.");
+                        }
+                        String desc = part1[0].trim();
+                        String[] part2 = part1[1].split(" /to ", 2);
+                        if (part2.length < 2) {
+                            throw new IllegalArgumentException("Event must have a /to end time.");
+                        }
+                        newTask = new Event(desc, part2[0].trim(), part2[1].trim());
+                    } catch (Exception e) {
+                        System.out.println("Error adding Event: " + e.getMessage());
+                    }
+                }
 
+                if (newTask != null) {
                     taskList[taskCount] = newTask;
                     taskCount++;
                     System.out.println("____________________________________________________________");
                     System.out.println("Got it. I've added this task:\n  " + newTask);
-                    System.out.println("Now you have " + taskCount+ " tasks in the list.");
+                    System.out.println("Now you have " + taskCount + " tasks in the list.");
                     System.out.println("____________________________________________________________");
-
-                } catch (Exception e) {
-                    System.out.println("Please type a valid input");
                 }
-
 
             } else {
                 taskList[taskCount] = new Task(input);
