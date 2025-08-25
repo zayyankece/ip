@@ -1,10 +1,10 @@
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public class Joko {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        Task[] taskList = new Task[100];
-        int taskCount = 0;
+        ArrayList<Task> taskList = new ArrayList<>();
 
         System.out.println("____________________________________________________________");
         System.out.println(" Hello! I'm Joko");
@@ -24,28 +24,28 @@ public class Joko {
             } else if (input.equals("list")) {
                 System.out.println("____________________________________________________________");
                 System.out.println("Here are the tasks in your list:");
-                for (int i = 0; i < taskCount; i++) {
-                    System.out.println((i + 1) + "." + taskList[i]);
+                for (int i = 0; i < taskList.size(); i++) {
+                    System.out.println((i + 1) + "." + taskList.get(i));
                 }
                 System.out.println("____________________________________________________________");
             } else if (command.equals("mark") || command.equals("unmark")) {
                 try {
                     int index = Integer.parseInt(inputParts[1]) - 1;
-                    if (index < 0 || index >= taskCount) {
+                    if (index < 0 || index >= taskList.size()) {
                         System.out.println("Invalid task number.");
                         continue;
                     }
                     if (command.equals("mark")) {
-                        taskList[index].isDone = true;
+                        taskList.get(index).isDone = true;
                         System.out.println("____________________________________________________________");
                         System.out.println(" Nice! I've marked this task as done:");
-                        System.out.println("   " + taskList[index]);
+                        System.out.println("   " + taskList.get(index));
                         System.out.println("____________________________________________________________");
                     } else {
-                        taskList[index].isDone = false;
+                        taskList.get(index).isDone = false;
                         System.out.println("____________________________________________________________");
                         System.out.println(" OK, I've marked this task as not done yet:");
-                        System.out.println("   " + taskList[index]);
+                        System.out.println("   " + taskList.get(index));
                         System.out.println("____________________________________________________________");
                     }
                 } catch (Exception e) {
@@ -93,19 +93,33 @@ public class Joko {
                 }
 
                 if (newTask != null) {
-                    taskList[taskCount] = newTask;
-                    taskCount++;
+                    taskList.add(newTask);
                     System.out.println("____________________________________________________________");
                     System.out.println("Got it. I've added this task:\n  " + newTask);
-                    System.out.println("Now you have " + taskCount + " tasks in the list.");
+                    System.out.println("Now you have " + taskList.size() + " tasks in the list.");
                     System.out.println("____________________________________________________________");
                 }
 
+            } else if (command.equals("delete")) {
+                try {
+                    int index = Integer.parseInt(inputParts[1]) - 1;
+                    if (index < 0 || index >= taskList.size()) {
+                        System.out.println("Invalid task number.");
+                        continue;
+                    } else {
+                        Task temp = taskList.get(index);
+                        taskList.remove(index);
+                        System.out.println("____________________________________________________________");
+                        System.out.println(" Noted. I've removed this task:\n  " + temp);
+                        System.out.println("Now you have " + taskList.size() + " tasks in the list.");
+                        System.out.println("____________________________________________________________");
+                    }
+                } catch (Exception e) {
+                    System.out.println("Please type a valid input: <delete> <task number>");
+                }
             } else {
-                taskList[taskCount] = new Task(input);
-                taskCount++;
                 System.out.println("____________________________________________________________");
-                System.out.println(" added: " + input);
+                System.out.println("sorry i could not understand your command :(");
                 System.out.println("____________________________________________________________");
             }
         }
