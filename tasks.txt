@@ -1,0 +1,3 @@
+T | 0 | eating
+T | 1 | dancing
+T | 1 | play
