@@ -1,5 +1,8 @@
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 import java.util.ArrayList;
 
@@ -78,9 +81,12 @@ public class Joko {
                     try {
                         String[] parts = input.substring(9).split(" /by", 2);
                         if (parts.length < 2 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
-                            throw new IllegalArgumentException("Deadline must have a description and a /by date/time.");
+                            throw new IllegalArgumentException("Deadline must have a description and " +
+                                    "a /by date/time (dd/MM/yyyy HHmm)");
                         }
-                        newTask = new Deadline(parts[0].trim(), parts[1].trim());
+                        DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
+                        LocalDateTime by = LocalDateTime.parse(parts[1].trim(), inputFormat);
+                        newTask = new Deadline(parts[0].trim(), by);
                     } catch (Exception e) {
                         System.out.println("Error adding Deadline: " + e.getMessage());
                     }
@@ -158,17 +164,18 @@ public class Joko {
     }
 
     static class Deadline extends Task {
-        protected String by;
+        protected LocalDateTime by;
 
-        public Deadline(String desc, String by) {
+        public Deadline(String desc, LocalDateTime by) {
             super(desc);
             this.by = by;
         }
 
         @Override
         public String toString() {
+            DateTimeFormatter outputFormat = DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm");
             return "[D]" + super.toString() +
-                    "(by: " + by + ") ";
+                    "(by: " + by.format(outputFormat) + ") ";
         }
     }
 
@@ -208,7 +215,8 @@ public class Joko {
                     writer.println("T | " + (t.isDone ? "1" : "0") + " | " + t.desc);
                 } else if (t instanceof Deadline) {
                     Deadline d = (Deadline) t;
-                    writer.println("D | " + (d.isDone ? "1" : "0") + " | " + d.desc + " | " + d.by);
+                    DateTimeFormatter fileFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HHmm");
+                    writer.println("D | " + (d.isDone ? "1" : "0") + " | " + d.desc + " | " + d.by.format(fileFormat));
                 } else if (t instanceof Event) {
                     Event e = (Event) t;
                     writer.println("E | " + (e.isDone ? "1" : "0") + " | " + e.desc + " | " + e.from + " | " + e.to);
@@ -236,7 +244,9 @@ public class Joko {
                 if (type.equals("T")) {
                     t = new ToDo(desc);
                 } else if (type.equals("D")) {
-                    t = new Deadline(desc, parts[3]);
+                    DateTimeFormatter fileFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HHmm");
+                    LocalDateTime by = LocalDateTime.parse(parts[3], fileFormat);
+                    t = new Deadline(desc, by);
                 } else if (type.equals("E")) {
                     t = new Event(desc, parts[3], parts[4]);
                 }
