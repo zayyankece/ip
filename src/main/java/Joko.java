@@ -7,9 +7,9 @@ import java.util.ArrayList;
 
 public class Joko {
     public static void main(String[] args) {
-        final String TASK_FILE = "tasks.txt";
-        ArrayList<Task> taskList = loadTasks(TASK_FILE);
         Ui ui = new Ui();
+        Storage storage = new Storage("task.txt");
+        ArrayList<Task> taskList = storage.loadTasks();
 
         ui.showWelcome(taskList);
 
@@ -32,11 +32,11 @@ public class Joko {
                     }
                     if (command.equals("mark")) {
                         taskList.get(index).isDone = true;
-                        saveTasks(taskList, TASK_FILE);
+                        storage.saveTasks(taskList);
                         ui.showTaskMarked(taskList.get(index), true);
                     } else {
                         taskList.get(index).isDone = false;
-                        saveTasks(taskList, TASK_FILE);
+                        storage.saveTasks(taskList);
                         ui.showTaskMarked(taskList.get(index), false);
                     }
                 } catch (Exception e) {
@@ -88,7 +88,7 @@ public class Joko {
 
                 if (newTask != null) {
                     taskList.add(newTask);
-                    saveTasks(taskList, TASK_FILE);
+                    storage.saveTasks(taskList);
                     ui.showTaskAdded(newTask, taskList.size());
                 }
 
@@ -101,7 +101,7 @@ public class Joko {
                     } else {
                         Task temp = taskList.get(index);
                         taskList.remove(index);
-                        saveTasks(taskList, TASK_FILE);
+                        storage.saveTasks(taskList);
                         ui.showTaskDeleted(temp, taskList.size());
                     }
                 } catch (Exception e) {
@@ -179,56 +179,4 @@ public class Joko {
         }
     }
 
-    public static void saveTasks(ArrayList<Task> tasks, String filename) {
-        try (java.io.PrintWriter writer = new java.io.PrintWriter(filename)) {
-            for (Task t : tasks) {
-                if (t instanceof ToDo) {
-                    writer.println("T | " + (t.isDone ? "1" : "0") + " | " + t.desc);
-                } else if (t instanceof Deadline) {
-                    Deadline d = (Deadline) t;
-                    DateTimeFormatter fileFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HHmm");
-                    writer.println("D | " + (d.isDone ? "1" : "0") + " | " + d.desc + " | " + d.by.format(fileFormat));
-                } else if (t instanceof Event) {
-                    Event e = (Event) t;
-                    writer.println("E | " + (e.isDone ? "1" : "0") + " | " + e.desc + " | " + e.from + " | " + e.to);
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("Error saving tasks: " + e.getMessage());
-        }
-    }
-
-    public static ArrayList<Task> loadTasks(String filename) {
-        ArrayList<Task> tasks = new ArrayList<>();
-        File file = new File(filename);
-        if (!file.exists()) {
-            return tasks; // return empty if no file yet
-        }
-        try (Scanner reader = new Scanner(file)) {
-            while (reader.hasNextLine()) {
-                String[] parts = reader.nextLine().split(" \\| ");
-                String type = parts[0];
-                boolean isDone = parts[1].equals("1");
-                String desc = parts[2];
-
-                Task t = null;
-                if (type.equals("T")) {
-                    t = new ToDo(desc);
-                } else if (type.equals("D")) {
-                    DateTimeFormatter fileFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HHmm");
-                    LocalDateTime by = LocalDateTime.parse(parts[3], fileFormat);
-                    t = new Deadline(desc, by);
-                } else if (type.equals("E")) {
-                    t = new Event(desc, parts[3], parts[4]);
-                }
-                if (t != null) {
-                    t.isDone = isDone;
-                    tasks.add(t);
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("Error loading tasks: " + e.getMessage());
-        }
-        return tasks;
-    }
 }
