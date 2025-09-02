@@ -1,5 +1,1 @@
-T | 0 | eating
-T | 1 | dancing
-T | 1 | play
-D | 0 | return book | 02/12/2019 1800
-D | 0 | return book | 02/01/2019 1800
+T | 1 | dance
