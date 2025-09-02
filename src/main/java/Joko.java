@@ -1,6 +1,5 @@
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
@@ -8,60 +7,40 @@ import java.util.ArrayList;
 
 public class Joko {
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
         final String TASK_FILE = "tasks.txt";
         ArrayList<Task> taskList = loadTasks(TASK_FILE);
+        Ui ui = new Ui();
 
-        System.out.println("____________________________________________________________");
-        System.out.println(" Hello! I'm Joko");
-        System.out.println(" What can I do for you?");
-        System.out.println("\nYour tasks:");
-        for (int i = 0; i < taskList.size(); i++) {
-            System.out.println((i + 1) + ". " + taskList.get(i));
-        }
-        System.out.println("____________________________________________________________");
+        ui.showWelcome(taskList);
 
         while (true) {
-            String input = sc.nextLine();
+            String input = ui.readCommand();
             String[] inputParts = input.split(" ", 2);
             String command = inputParts[0];
 
             if (input.equals("bye")) {
-                System.out.println("____________________________________________________________");
-                System.out.println(" Bye. Hope to see you again soon!");
-                System.out.println("____________________________________________________________");
+                ui.showMessage("Bye. Hope to see you again soon!");
                 break;
             } else if (input.equals("list")) {
-                System.out.println("____________________________________________________________");
-                System.out.println("Here are the tasks in your list:");
-                for (int i = 0; i < taskList.size(); i++) {
-                    System.out.println((i + 1) + "." + taskList.get(i));
-                }
-                System.out.println("____________________________________________________________");
+                ui.showTaskList(taskList);
             } else if (command.equals("mark") || command.equals("unmark")) {
                 try {
                     int index = Integer.parseInt(inputParts[1]) - 1;
                     if (index < 0 || index >= taskList.size()) {
-                        System.out.println("Invalid task number.");
+                        ui.showMessage("Invalid task number.");
                         continue;
                     }
                     if (command.equals("mark")) {
                         taskList.get(index).isDone = true;
                         saveTasks(taskList, TASK_FILE);
-                        System.out.println("____________________________________________________________");
-                        System.out.println(" Nice! I've marked this task as done:");
-                        System.out.println("   " + taskList.get(index));
-                        System.out.println("____________________________________________________________");
+                        ui.showTaskMarked(taskList.get(index), true);
                     } else {
                         taskList.get(index).isDone = false;
                         saveTasks(taskList, TASK_FILE);
-                        System.out.println("____________________________________________________________");
-                        System.out.println(" OK, I've marked this task as not done yet:");
-                        System.out.println("   " + taskList.get(index));
-                        System.out.println("____________________________________________________________");
+                        ui.showTaskMarked(taskList.get(index), false);
                     }
                 } catch (Exception e) {
-                    System.out.println("Please type a valid input: <mark/unmark> <task number>");
+                    ui.showMessage("Please type a valid input: <mark/unmark> <task number>");
                 }
 
             } else if (command.equals("todo") || command.equals("deadline") || command.equals("event")) {
@@ -75,7 +54,7 @@ public class Joko {
                         }
                         newTask = new ToDo(desc);
                     } catch (Exception e) {
-                        System.out.println("Error adding Todo: " + e.getMessage());
+                        ui.showMessage("Error adding Todo: " + e.getMessage());
                     }
                 } else if (command.equals("deadline")) {
                     try {
@@ -88,7 +67,7 @@ public class Joko {
                         LocalDateTime by = LocalDateTime.parse(parts[1].trim(), inputFormat);
                         newTask = new Deadline(parts[0].trim(), by);
                     } catch (Exception e) {
-                        System.out.println("Error adding Deadline: " + e.getMessage());
+                        ui.showMessage("Error adding Deadline: " + e.getMessage());
                     }
                 } else if (command.equals("event")) {
                     try {
@@ -103,45 +82,37 @@ public class Joko {
                         }
                         newTask = new Event(desc, part2[0].trim(), part2[1].trim());
                     } catch (Exception e) {
-                        System.out.println("Error adding Event: " + e.getMessage());
+                        ui.showMessage("Error adding Event: " + e.getMessage());
                     }
                 }
 
                 if (newTask != null) {
                     taskList.add(newTask);
                     saveTasks(taskList, TASK_FILE);
-                    System.out.println("____________________________________________________________");
-                    System.out.println("Got it. I've added this task:\n  " + newTask);
-                    System.out.println("Now you have " + taskList.size() + " tasks in the list.");
-                    System.out.println("____________________________________________________________");
+                    ui.showTaskAdded(newTask, taskList.size());
                 }
 
             } else if (command.equals("delete")) {
                 try {
                     int index = Integer.parseInt(inputParts[1]) - 1;
                     if (index < 0 || index >= taskList.size()) {
-                        System.out.println("Invalid task number.");
+                        ui.showMessage("Invalid task number.");
                         continue;
                     } else {
                         Task temp = taskList.get(index);
                         taskList.remove(index);
                         saveTasks(taskList, TASK_FILE);
-                        System.out.println("____________________________________________________________");
-                        System.out.println(" Noted. I've removed this task:\n  " + temp);
-                        System.out.println("Now you have " + taskList.size() + " tasks in the list.");
-                        System.out.println("____________________________________________________________");
+                        ui.showTaskDeleted(temp, taskList.size());
                     }
                 } catch (Exception e) {
-                    System.out.println("Please type a valid input: <delete> <task number>");
+                    ui.showMessage("Please type a valid input: <delete> <task number>");
                 }
             } else {
-                System.out.println("____________________________________________________________");
-                System.out.println("sorry i could not understand your command :(");
-                System.out.println("____________________________________________________________");
+                ui.showMessage("sorry i could not understand your command :(");
             }
         }
 
-        sc.close();
+        ui.close();
     }
 
     static class Task {
