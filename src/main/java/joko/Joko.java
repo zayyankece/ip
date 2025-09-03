@@ -1,5 +1,9 @@
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+package joko;
+
+import joko.parser.Parser;
+import joko.storage.Storage;
+import joko.task.*;
+import joko.ui.Ui;
 
 public class Joko {
     public static void main(String[] args) {
@@ -65,7 +69,7 @@ public class Joko {
                 }
             } else if (commandType.equals("delete")) {
                 try {
-                    // Use Parser to get the index from input
+                    // Use joko.parser.Parser to get the index from input
                     Parser.Command cmd = Parser.parseIndexCommand(input, "delete");
                     int index = cmd.index;
 
@@ -81,70 +85,6 @@ public class Joko {
         }
 
         ui.close();
-    }
-
-    static class Task {
-        protected final String desc;
-        protected boolean isDone;
-
-        public Task(String desc) {
-            this.desc = desc;
-            this.isDone = false;
-        }
-
-        public String getStatus() {
-            return (isDone ? "[X] " : "[ ] ");
-        }
-
-        @Override
-        public String toString() {
-            return getStatus() + desc;
-        }
-    }
-
-    static class Deadline extends Task {
-        protected LocalDateTime by;
-
-        public Deadline(String desc, LocalDateTime by) {
-            super(desc);
-            this.by = by;
-        }
-
-        @Override
-        public String toString() {
-            DateTimeFormatter outputFormat = DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm");
-            return "[D]" + super.toString() +
-                    "(by: " + by.format(outputFormat) + ") ";
-        }
-    }
-
-    static class ToDo extends Task {
-        public ToDo(String desc) {
-            super(desc);
-        }
-
-        @Override
-        public String toString() {
-            return "[T]" + super.toString();
-        }
-    }
-
-    static class Event extends Task {
-        protected String from;
-        protected String to;
-
-        public Event(String desc, String from, String to) {
-            super(desc);
-            this.from = from;
-            this.to = to;
-        }
-
-        @Override
-        public String toString() {
-            return "[E]" + super.toString() +
-                    "(from: " + from +
-                    " to: " + to + ")";
-        }
     }
 
 }
