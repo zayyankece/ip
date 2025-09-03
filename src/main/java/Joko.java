@@ -1,17 +1,13 @@
-import java.io.File;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Scanner;
-import java.util.ArrayList;
 
 public class Joko {
     public static void main(String[] args) {
         Ui ui = new Ui();
         Storage storage = new Storage("task.txt");
-        ArrayList<Task> taskList = storage.loadTasks();
+        TaskList taskList = new TaskList(storage.loadTasks(), storage);
 
-        ui.showWelcome(taskList);
+        ui.showWelcome(taskList.getTasks());
 
         while (true) {
             String input = ui.readCommand();
@@ -22,27 +18,15 @@ public class Joko {
                 ui.showMessage("Bye. Hope to see you again soon!");
                 break;
             } else if (input.equals("list")) {
-                ui.showTaskList(taskList);
+                ui.showTaskList(taskList.getTasks());
             } else if (command.equals("mark") || command.equals("unmark")) {
                 try {
                     int index = Integer.parseInt(inputParts[1]) - 1;
-                    if (index < 0 || index >= taskList.size()) {
-                        ui.showMessage("Invalid task number.");
-                        continue;
-                    }
-                    if (command.equals("mark")) {
-                        taskList.get(index).isDone = true;
-                        storage.saveTasks(taskList);
-                        ui.showTaskMarked(taskList.get(index), true);
-                    } else {
-                        taskList.get(index).isDone = false;
-                        storage.saveTasks(taskList);
-                        ui.showTaskMarked(taskList.get(index), false);
-                    }
+                    Joko.Task t = taskList.markTask(index, command.equals("mark"));
+                    ui.showTaskMarked(t, command.equals("mark"));
                 } catch (Exception e) {
                     ui.showMessage("Please type a valid input: <mark/unmark> <task number>");
                 }
-
             } else if (command.equals("todo") || command.equals("deadline") || command.equals("event")) {
                 Task newTask = null;
 
@@ -69,7 +53,7 @@ public class Joko {
                     } catch (Exception e) {
                         ui.showMessage("Error adding Deadline: " + e.getMessage());
                     }
-                } else if (command.equals("event")) {
+                } else  {
                     try {
                         String[] part1 = input.substring(6).split(" /from ", 2);
                         if (part1.length < 2) {
@@ -87,22 +71,19 @@ public class Joko {
                 }
 
                 if (newTask != null) {
-                    taskList.add(newTask);
-                    storage.saveTasks(taskList);
+                    taskList.addTask(newTask);
                     ui.showTaskAdded(newTask, taskList.size());
                 }
 
             } else if (command.equals("delete")) {
                 try {
                     int index = Integer.parseInt(inputParts[1]) - 1;
-                    if (index < 0 || index >= taskList.size()) {
+                    if (index < 0 || index >= taskList.getTasks().size()) {
                         ui.showMessage("Invalid task number.");
                         continue;
                     } else {
-                        Task temp = taskList.get(index);
-                        taskList.remove(index);
-                        storage.saveTasks(taskList);
-                        ui.showTaskDeleted(temp, taskList.size());
+                        Task removed = taskList.deleteTask(index);
+                        ui.showTaskDeleted(removed, taskList.size());
                     }
                 } catch (Exception e) {
                     ui.showMessage("Please type a valid input: <delete> <task number>");
