@@ -1,5 +1,8 @@
+package joko.ui;
+
 import java.util.ArrayList;
 import java.util.Scanner;
+import joko.task.Task;
 
 public class Ui {
     private final Scanner sc;
@@ -8,7 +11,7 @@ public class Ui {
         this.sc = new Scanner(System.in);
     }
 
-    public void showWelcome(ArrayList<Joko.Task> tasks) {
+    public void showWelcome(ArrayList<Task> tasks) {
         System.out.println("____________________________________________________________");
         System.out.println("Hello! I'm Joko");
         System.out.println("What can I do for you?");
@@ -27,7 +30,7 @@ public class Ui {
         return sc.nextLine();
     }
 
-    public void showTaskList(ArrayList<Joko.Task> tasks) {
+    public void showTaskList(ArrayList<Task> tasks) {
         System.out.println("____________________________________________________________");
         if (tasks.isEmpty()) {
             System.out.println("No tasks in your list yet.");
@@ -46,14 +49,14 @@ public class Ui {
         System.out.println("____________________________________________________________");
     }
 
-    public void showTaskAdded(Joko.Task task, int size) {
+    public void showTaskAdded(Task task, int size) {
         System.out.println("____________________________________________________________");
         System.out.println("Got it. I've added this task:\n  " + task);
         System.out.println("Now you have " + size + " tasks in the list.");
         System.out.println("____________________________________________________________");
     }
 
-    public void showTaskDeleted(Joko.Task task, int size) {
+    public void showTaskDeleted(Task task, int size) {
         System.out.println("____________________________________________________________");
         System.out.println(" Noted. I've removed this task:\n  " + task);
         System.out.println("Now you have " + size + " tasks in the list.");
@@ -61,7 +64,7 @@ public class Ui {
 
     }
 
-    public void showTaskMarked(Joko.Task task, boolean isDone) {
+    public void showTaskMarked(Task task, boolean isDone) {
         System.out.println("____________________________________________________________");
         if (isDone) {
             System.out.println("Nice! I've marked this task as done:");
