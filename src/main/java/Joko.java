@@ -11,85 +11,72 @@ public class Joko {
 
         while (true) {
             String input = ui.readCommand();
-            String[] inputParts = input.split(" ", 2);
-            String command = inputParts[0];
+            String commandType = Parser.getCommandType(input);
+            //String[] inputParts = input.split(" ", 2);
+            //String command = inputParts[0];
 
-            if (input.equals("bye")) {
+            if (commandType.equals("bye")) {
                 ui.showMessage("Bye. Hope to see you again soon!");
                 break;
-            } else if (input.equals("list")) {
+            } else if (commandType.equals("list")) {
                 ui.showTaskList(taskList.getTasks());
-            } else if (command.equals("mark") || command.equals("unmark")) {
+            } else if (commandType.equals("mark") || commandType.equals("unmark")) {
                 try {
-                    int index = Integer.parseInt(inputParts[1]) - 1;
-                    Joko.Task t = taskList.markTask(index, command.equals("mark"));
-                    ui.showTaskMarked(t, command.equals("mark"));
+                    Parser.Command cmd = Parser.parseIndexCommand(input, commandType);
+                    Task t = taskList.markTask(cmd.index, commandType.equals("mark"));
+                    ui.showTaskMarked(t, commandType.equals("mark"));
                 } catch (Exception e) {
                     ui.showMessage("Please type a valid input: <mark/unmark> <task number>");
                 }
-            } else if (command.equals("todo") || command.equals("deadline") || command.equals("event")) {
-                Task newTask = null;
+            } else if (commandType.equals("todo") || commandType.equals("deadline") || commandType.equals("event")) {
+                try {
+                    Parser.Command cmd;
+                    switch (commandType) {
+                        case "todo":
+                            cmd = Parser.parseTodo(input);
+                            break;
+                        case "deadline":
+                            cmd = Parser.parseDeadline(input);
+                            break;
+                        case "event":
+                            cmd = Parser.parseEvent(input);
+                            break;
+                        default:
+                            throw new IllegalArgumentException("Unknown command type");
+                    }
 
-                if (command.equals("todo")) {
-                    try {
-                        String desc = input.substring(5).trim();
-                        if (desc.isEmpty()) {
-                            throw new IllegalArgumentException("Todo description cannot be empty!");
-                        }
-                        newTask = new ToDo(desc);
-                    } catch (Exception e) {
-                        ui.showMessage("Error adding Todo: " + e.getMessage());
+                    Task newTask = null;
+                    switch (cmd.type) {
+                        case "todo":
+                            newTask = new ToDo(cmd.desc);
+                            break;
+                        case "deadline":
+                            newTask = new Deadline(cmd.desc, cmd.by);
+                            break;
+                        case "event":
+                            newTask = new Event(cmd.desc, cmd.from, cmd.to);
+                            break;
                     }
-                } else if (command.equals("deadline")) {
-                    try {
-                        String[] parts = input.substring(9).split(" /by", 2);
-                        if (parts.length < 2 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
-                            throw new IllegalArgumentException("Deadline must have a description and " +
-                                    "a /by date/time (dd/MM/yyyy HHmm)");
-                        }
-                        DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
-                        LocalDateTime by = LocalDateTime.parse(parts[1].trim(), inputFormat);
-                        newTask = new Deadline(parts[0].trim(), by);
-                    } catch (Exception e) {
-                        ui.showMessage("Error adding Deadline: " + e.getMessage());
-                    }
-                } else  {
-                    try {
-                        String[] part1 = input.substring(6).split(" /from ", 2);
-                        if (part1.length < 2) {
-                            throw new IllegalArgumentException("Event must have a description and a /from start time.");
-                        }
-                        String desc = part1[0].trim();
-                        String[] part2 = part1[1].split(" /to ", 2);
-                        if (part2.length < 2) {
-                            throw new IllegalArgumentException("Event must have a /to end time.");
-                        }
-                        newTask = new Event(desc, part2[0].trim(), part2[1].trim());
-                    } catch (Exception e) {
-                        ui.showMessage("Error adding Event: " + e.getMessage());
-                    }
-                }
 
-                if (newTask != null) {
                     taskList.addTask(newTask);
                     ui.showTaskAdded(newTask, taskList.size());
+                } catch (Exception e) {
+                    ui.showMessage("Error adding task: " + e.getMessage());
                 }
-
-            } else if (command.equals("delete")) {
+            } else if (commandType.equals("delete")) {
                 try {
-                    int index = Integer.parseInt(inputParts[1]) - 1;
-                    if (index < 0 || index >= taskList.getTasks().size()) {
-                        ui.showMessage("Invalid task number.");
-                        continue;
-                    } else {
-                        Task removed = taskList.deleteTask(index);
-                        ui.showTaskDeleted(removed, taskList.size());
-                    }
+                    // Use Parser to get the index from input
+                    Parser.Command cmd = Parser.parseIndexCommand(input, "delete");
+                    int index = cmd.index;
+
+                    // Delete the task and show confirmation
+                    Task removed = taskList.deleteTask(index);
+                    ui.showTaskDeleted(removed, taskList.size());
                 } catch (Exception e) {
                     ui.showMessage("Please type a valid input: <delete> <task number>");
                 }
             } else {
-                ui.showMessage("sorry i could not understand your command :(");
+                ui.showMessage("Sorry, I could not understand your command :(");
             }
         }
 
