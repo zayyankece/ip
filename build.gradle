@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'checkstyle'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
@@ -39,3 +40,19 @@ shadowJar {
 run{
     standardInput = System.in
 }
+
+checkstyle {
+    toolVersion = "11.0.0"                     // Use your desired Checkstyle version
+    configDirectory = file("${rootDir}/config/checkstyle")  // Points to folder containing checkstyle.xml
+    // OR if you prefer using a single file directly:
+    // configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+}
+
+tasks.withType(Checkstyle) {
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+}
+
+

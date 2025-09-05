@@ -1,1 +1,2 @@
 T | 1 | swim
+T | 1 | eating
