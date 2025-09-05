@@ -1,3 +1,4 @@
+
 package joko;
 
 import joko.parser.Parser;
@@ -5,7 +6,23 @@ import joko.storage.Storage;
 import joko.task.*;
 import joko.ui.Ui;
 
+/**
+ * The main class of the Joko task manager application.
+ *
+ * <p>This class handles the user interface, task storage, and command parsing.
+ * It runs the main program loop where users can add, list, mark/unmark,
+ * and delete tasks.</p>
+ */
 public class Joko {
+
+    /**
+     * The entry point of the Joko application.
+     *
+     * <p>It initializes the user interface and storage, loads tasks, and
+     * enters a loop to process user commands until the "bye" command is received.</p>
+     *
+     * @param args command-line arguments (not used)
+     */
     public static void main(String[] args) {
         Ui ui = new Ui();
         Storage storage = new Storage("task.txt");
@@ -36,30 +53,30 @@ public class Joko {
                 try {
                     Parser.Command cmd;
                     switch (commandType) {
-                        case "todo":
-                            cmd = Parser.parseTodo(input);
-                            break;
-                        case "deadline":
-                            cmd = Parser.parseDeadline(input);
-                            break;
-                        case "event":
-                            cmd = Parser.parseEvent(input);
-                            break;
-                        default:
-                            throw new IllegalArgumentException("Unknown command type");
+                    case "todo":
+                        cmd = Parser.parseTodo(input);
+                        break;
+                    case "deadline":
+                        cmd = Parser.parseDeadline(input);
+                        break;
+                    case "event":
+                        cmd = Parser.parseEvent(input);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Unknown command type");
                     }
-
                     Task newTask = null;
+
                     switch (cmd.type) {
-                        case "todo":
-                            newTask = new ToDo(cmd.desc);
-                            break;
-                        case "deadline":
-                            newTask = new Deadline(cmd.desc, cmd.by);
-                            break;
-                        case "event":
-                            newTask = new Event(cmd.desc, cmd.from, cmd.to);
-                            break;
+                    case "todo":
+                        newTask = new ToDo(cmd.desc);
+                        break;
+                    case "deadline":
+                        newTask = new Deadline(cmd.desc, cmd.by);
+                        break;
+                    case "event":
+                        newTask = new Event(cmd.desc, cmd.from, cmd.to);
+                        break;
                     }
 
                     taskList.addTask(newTask);
