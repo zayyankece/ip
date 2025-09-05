@@ -82,6 +82,7 @@ public class Storage {
         if (!file.exists()) {
             return tasks; // return empty if no file yet
         }
+
         try (Scanner reader = new Scanner(file)) {
             while (reader.hasNextLine()) {
                 String[] parts = reader.nextLine().split(" \\| ");
@@ -89,24 +90,26 @@ public class Storage {
                 boolean isDone = parts[1].equals("1");
                 String desc = parts[2];
 
-                Task t = null;
+                Task task = null;
                 if (type.equals("T")) {
-                    t = new ToDo(desc);
+                    task = new ToDo(desc);
                 } else if (type.equals("D")) {
                     DateTimeFormatter fileFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HHmm");
                     LocalDateTime by = LocalDateTime.parse(parts[3], fileFormat);
-                    t = new Deadline(desc, by);
+                    task = new Deadline(desc, by);
                 } else if (type.equals("E")) {
-                    t = new Event(desc, parts[3], parts[4]);
+                    task = new Event(desc, parts[3], parts[4]);
                 }
-                if (t != null) {
-                    t.setDone(isDone);
-                    tasks.add(t);
+
+                if (task != null) {
+                    task.setDone(isDone);
+                    tasks.add(task);
                 }
             }
         } catch (IOException e) {
             System.out.println("Error loading tasks: " + e.getMessage());
         }
+
         return tasks;
     }
 }

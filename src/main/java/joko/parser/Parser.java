@@ -102,7 +102,9 @@ public class Parser {
      */
     public static Command parseIndexCommand(String input, String type) throws NumberFormatException {
         String[] parts = input.split(" ", 2);
-        if (parts.length < 2) throw new NumberFormatException("Missing task number");
+        if (parts.length < 2) {
+            throw new NumberFormatException("Missing task number");
+        }
         int index = Integer.parseInt(parts[1].trim()) - 1;
         return new Command(type, index);
     }
@@ -116,7 +118,9 @@ public class Parser {
      */
     public static Command parseTodo(String input) throws IllegalArgumentException {
         String desc = input.substring(5).trim();
-        if (desc.isEmpty()) throw new IllegalArgumentException("Todo description cannot be empty");
+        if (desc.isEmpty()) {
+            throw new IllegalArgumentException("Todo description cannot be empty");
+        }
         return new Command("todo", desc, null, null, null);
     }
 
@@ -130,8 +134,9 @@ public class Parser {
     public static Command parseDeadline(String input) throws IllegalArgumentException {
         try {
             String[] parts = input.substring(9).split(" /by", 2);
-            if (parts.length < 2 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty())
+            if (parts.length < 2 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
                 throw new IllegalArgumentException("Deadline must have a description and /by time");
+            }
 
             DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
             LocalDateTime by = LocalDateTime.parse(parts[1].trim(), inputFormat);
@@ -151,15 +156,19 @@ public class Parser {
     public static Command parseEvent(String input) throws IllegalArgumentException {
         try {
             String[] part1 = input.substring(6).split(" /from ", 2);
-            if (part1.length < 2) throw new IllegalArgumentException("Event must have /from time");
+            if (part1.length < 2) {
+                throw new IllegalArgumentException("Event must have /from time");
+            }
 
             String desc = part1[0].trim();
             String[] part2 = part1[1].split(" /to ", 2);
-            if (part2.length < 2) throw new IllegalArgumentException("Event must have /to time");
-
+            if (part2.length < 2) {
+                throw new IllegalArgumentException("Event must have /to time");
+            }
             return new Command("event", desc, null, part2[0].trim(), part2[1].trim());
         } catch (Exception e) {
-            throw new IllegalArgumentException("Invalid event format. Use: event <desc> /from <start> /to <end>");
+            throw new IllegalArgumentException(
+                    "Invalid event format. Use: event <desc> /from <start> /to <end>");
         }
     }
 

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import joko.storage.Storage;
 
-
 /**
  * Represents a list of tasks and provides operations to manage them.
  * <p>
@@ -13,6 +12,7 @@ import joko.storage.Storage;
  * </p>
  */
 public class TaskList {
+
     /** The list of tasks being managed. */
     private final ArrayList<Task> tasks;
 
@@ -53,9 +53,9 @@ public class TaskList {
         if (index < 0 || index >= tasks.size()) {
             throw new IndexOutOfBoundsException("Invalid task index.");
         }
-        Task removed = tasks.remove(index);
+        Task removedTask = tasks.remove(index);
         storage.saveTasks(tasks);
-        return removed;
+        return removedTask;
     }
 
     /**

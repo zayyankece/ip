@@ -20,6 +20,7 @@ import joko.task.Task;
  * </p>
  */
 public class Ui {
+
     private final Scanner sc;
 
     /**

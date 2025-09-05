@@ -8,6 +8,7 @@ package joko.task;
  * </p>
  */
 public class ToDo extends Task {
+
     /**
      * Constructs a new {@code ToDo} task with the given description.
      *
