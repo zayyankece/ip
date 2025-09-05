@@ -5,6 +5,7 @@ import java.util.Scanner;
 import joko.task.Task;
 
 public class Ui {
+
     private final Scanner sc;
 
     public Ui() {

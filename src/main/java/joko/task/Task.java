@@ -1,6 +1,7 @@
 package joko.task;
 
 public class Task {
+
     protected final String desc;
     protected boolean isDone;
 
