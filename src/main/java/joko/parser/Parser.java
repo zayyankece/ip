@@ -173,6 +173,22 @@ public class Parser {
     }
 
     /**
+     * Parses the user input for the 'find' command.
+     * Expects the second token to be the keyword to search for.
+     *
+     * @param input user input split by spaces
+     * @return FindCommand containing the search keyword
+     * @throws IllegalArgumentException if no keyword is provided
+     */
+    public static Command parseFind(String input) {
+        String keyword = input.substring(5).trim(); // after "find "
+        if (keyword.isEmpty()) {
+            throw new IllegalArgumentException("Keyword cannot be empty");
+        }
+        return new Command("find", keyword, null, null, null);
+    }
+
+    /**
      * Checks if the input is the exit command "bye".
      *
      * @param input the raw user input

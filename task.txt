@@ -1,2 +1,4 @@
 T | 1 | swim
-T | 1 | eating
+T | 0 | eat swim
+T | 0 | dance swim
+T | 0 | run

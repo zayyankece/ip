@@ -81,6 +81,24 @@ public class TaskList {
      *
      * @return the {@link ArrayList} of tasks
      */
+    /**
+     * Returns a list of tasks whose descriptions contain the given keyword.
+     *
+     * <p>The search is case-insensitive.</p>
+     *
+     * @param keyword the keyword to search for
+     * @return an ArrayList of matching tasks
+     */
+    public ArrayList<Task> findTasks(String keyword) {
+        ArrayList<Task> results = new ArrayList<>();
+        for (Task t : tasks) {
+            if (t.getDesc().contains(keyword)) {
+                results.add(t);
+            }
+        }
+        return results;
+    }
+
     public ArrayList<Task> getTasks() {
         return tasks;
     }

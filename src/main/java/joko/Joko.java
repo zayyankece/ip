@@ -38,6 +38,8 @@ public class Joko {
         while (true) {
             String input = ui.readCommand();
             String commandType = Parser.getCommandType(input);
+            //String[] inputParts = input.split(" ", 2);
+            //String command = inputParts[0];
 
             if (commandType.equals("bye")) {
                 ui.showMessage("Bye. Hope to see you again soon!");
@@ -100,6 +102,10 @@ public class Joko {
                 } catch (Exception e) {
                     ui.showMessage("Please type a valid input: <delete> <task number>");
                 }
+
+            } else if (commandType.equals("find")) {
+                Parser.Command cmd = Parser.parseFind(input);
+                ui.showFoundTasks(taskList.findTasks(cmd.desc));
 
             } else {
                 ui.showMessage("Sorry, I could not understand your command :(");
