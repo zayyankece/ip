@@ -114,7 +114,6 @@ public class Ui {
         System.out.println(" Noted. I've removed this task:\n  " + task);
         System.out.println("Now you have " + size + " tasks in the list.");
         System.out.println("____________________________________________________________");
-
     }
 
     /**
@@ -154,7 +153,9 @@ public class Ui {
         System.out.println("____________________________________________________________");
     }
 
-
+    /**
+     * Closes the input scanner.
+     */
     public void close() {
         sc.close();
     }

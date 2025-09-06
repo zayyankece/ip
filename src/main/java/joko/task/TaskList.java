@@ -77,11 +77,6 @@ public class TaskList {
     }
 
     /**
-     * Returns the list of tasks.
-     *
-     * @return the {@link ArrayList} of tasks
-     */
-    /**
      * Returns a list of tasks whose descriptions contain the given keyword.
      *
      * <p>The search is case-insensitive.</p>
@@ -99,6 +94,11 @@ public class TaskList {
         return results;
     }
 
+    /**
+     * Returns the list of tasks.
+     *
+     * @return the {@link ArrayList} of tasks
+     */
     public ArrayList<Task> getTasks() {
         return tasks;
     }
