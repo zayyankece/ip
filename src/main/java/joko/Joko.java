@@ -69,16 +69,17 @@ public class Joko {
                 }
             } else if (commandType.equals("delete")) {
                 try {
-                    // Use joko.parser.Parser to get the index from input
                     Parser.Command cmd = Parser.parseIndexCommand(input, "delete");
                     int index = cmd.index;
 
-                    // Delete the task and show confirmation
                     Task removed = taskList.deleteTask(index);
                     ui.showTaskDeleted(removed, taskList.size());
                 } catch (Exception e) {
                     ui.showMessage("Please type a valid input: <delete> <task number>");
                 }
+            } else if (commandType.equals("find")) {
+                Parser.Command cmd = Parser.parseFind(input);
+                ui.showFoundTasks(taskList.findTasks(cmd.desc));
             } else {
                 ui.showMessage("Sorry, I could not understand your command :(");
             }
