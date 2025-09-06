@@ -14,7 +14,7 @@ import joko.ui.Ui;
  * The main class of the Joko task manager application.
  *
  * <p>This class handles the user interface, task storage, and command parsing.
- * It runs the main program loop where users can add, list, mark/unmark,
+ * It runs the main program loop where users can add, list, mark/unmark, find
  * and delete tasks.</p>
  */
 public class Joko {
@@ -38,8 +38,6 @@ public class Joko {
         while (true) {
             String input = ui.readCommand();
             String commandType = Parser.getCommandType(input);
-            //String[] inputParts = input.split(" ", 2);
-            //String command = inputParts[0];
 
             if (commandType.equals("bye")) {
                 ui.showMessage("Bye. Hope to see you again soon!");
