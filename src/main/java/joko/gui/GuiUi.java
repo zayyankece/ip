@@ -23,15 +23,8 @@ public class GuiUi {
         StringBuilder sb = new StringBuilder();
         sb.append("Hello! I'm Joko\n");
         sb.append("What can I do for you?\n");
-        if (tasks.isEmpty()) {
-            sb.append("No tasks in your list yet.\n");
-        } else {
-            sb.append("Here are the tasks in your list:\n");
-            for (int i = 0; i < tasks.size(); i++) {
-                sb.append((i + 1)).append(". ").append(tasks.get(i)).append("\n");
-            }
-        }
-        return sb.toString().trim();
+        sb.append(showTaskList(tasks));
+        return sb.toString();
     }
 
     /**
