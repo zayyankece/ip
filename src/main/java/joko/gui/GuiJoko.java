@@ -11,14 +11,28 @@ import joko.task.TaskList;
 import joko.task.ToDo;
 
 /**
- * A wrapper for the Joko logic to be used in GUI.
- * Returns string responses instead of printing.
+ * A wrapper class for the Joko logic to be used in a GUI environment.
+ * <p>
+ * This class processes user commands and returns string responses
+ * instead of printing them directly to the console.
+ * It handles task operations such as adding, deleting, marking/unmarking,
+ * listing, and finding tasks.
+ * </p>
  */
 public class GuiJoko {
 
+    /** The GUI interface used to format responses. */
     private final GuiUi guiUi;
+
+    /** The task list storing all tasks and interacting with storage. */
     private final TaskList taskList;
 
+    /**
+     * Constructs a new {@code GuiJoko} instance.
+     * <p>
+     * Initializes the GUI interface and loads tasks from storage.
+     * </p>
+     */
     public GuiJoko() {
         this.guiUi = new GuiUi();
         Storage storage = new Storage("task.txt");
@@ -26,10 +40,21 @@ public class GuiJoko {
     }
 
     /**
-     * Processes a command and returns Joko's response as a string.
+     * Processes a user command and returns the response as a string.
+     * <p>
+     * Supported commands include:
+     * <ul>
+     *     <li>bye</li>
+     *     <li>list</li>
+     *     <li>mark/unmark</li>
+     *     <li>todo/deadline/event</li>
+     *     <li>delete</li>
+     *     <li>find</li>
+     * </ul>
+     * </p>
      *
-     * @param input the user command
-     * @return the response string
+     * @param input the command input string from the user
+     * @return the response string after executing the command, or an error message if failed
      */
     public String getResponse(String input) {
         String commandType = Parser.getCommandType(input);
@@ -103,7 +128,12 @@ public class GuiJoko {
     }
 
     /**
-     * Returns a welcome message for GUI.
+     * Returns the welcome message for the GUI.
+     * <p>
+     * Typically called when the GUI is initialized to show the user a greeting.
+     * </p>
+     *
+     * @return a string representing the welcome message
      */
     public String getWelcomeMessage() {
         return guiUi.showWelcome(taskList.getTasks());

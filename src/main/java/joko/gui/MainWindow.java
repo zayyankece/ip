@@ -9,7 +9,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
 /**
- * Controller for the main GUI.
+ * Controller for the main GUI of the Joko application.
+ * <p>
+ * This class manages the interaction between the user and the Joko logic,
+ * displaying dialog boxes in the GUI for both user input and Joko's responses.
+ * </p>
  */
 public class MainWindow extends AnchorPane {
     @FXML
@@ -26,13 +30,27 @@ public class MainWindow extends AnchorPane {
     private Image userImage = new Image(this.getClass().getResourceAsStream("/images/Zayyan.jpeg"));
     private Image dukeImage = new Image(this.getClass().getResourceAsStream("/images/Anomali.jpeg"));
 
+    /**
+     * Initializes the controller.
+     * <p>
+     * Sets up the GUIJoko instance and binds the scroll pane's vertical scroll
+     * value to the height of the dialog container so that it scrolls automatically.
+     * </p>
+     */
     @FXML
     public void initialize() {
         guiJoko = new GuiJoko();
         scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
     }
 
-    /** Injects the Duke instance */
+    /**
+     * Injects a {@link GuiJoko} instance into the controller.
+     * <p>
+     * Also adds Joko's welcome message to the dialog container when the instance is set.
+     * </p>
+     *
+     * @param j the {@code GuiJoko} instance to set
+     */
     public void setGuiJoko(GuiJoko j) {
         guiJoko = j;
         dialogContainer.getChildren().add(
@@ -41,8 +59,15 @@ public class MainWindow extends AnchorPane {
     }
 
     /**
-     * Creates two dialog boxes, one echoing user input and the other containing Duke's reply and then appends them to
-     * the dialog container. Clears the user input after processing.
+     * Handles user input from the GUI.
+     * <p>
+     * This method creates two dialog boxes:
+     * <ul>
+     *   <li>One displaying the user's input</li>
+     *   <li>One displaying Joko's response</li>
+     * </ul>
+     * After adding the dialog boxes to the container, the user input field is cleared.
+     * </p>
      */
     @FXML
     private void handleUserInput() {
