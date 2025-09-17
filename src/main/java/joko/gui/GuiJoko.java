@@ -87,6 +87,9 @@ public class GuiJoko {
     private String handleAddTask(String input, String commandType) {
         Parser.Command cmd = parseCommandByType(input, commandType);
         Task newTask = createTaskFromCommand(cmd);
+        if (taskList.contains(newTask)) {
+            return "Duplicate task detected! Task not added.";
+        }
         taskList.addTask(newTask);
         return guiUi.showTaskAdded(newTask, taskList.size());
     }
