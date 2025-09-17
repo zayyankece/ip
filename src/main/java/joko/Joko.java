@@ -93,6 +93,11 @@ public class Joko {
             default -> new Event(cmd.desc, cmd.from, cmd.to);
             };
 
+            if (taskList.contains(newTask)) {
+                ui.showMessage("Duplicate task detected! Task not added.");
+                return;
+            }
+
             taskList.addTask(newTask);
             ui.showTaskAdded(newTask, taskList.size());
         } catch (Exception e) {

@@ -46,6 +46,24 @@ public class Event extends Task {
     }
 
     /**
+     * Checks if this Event is equal to another object.
+     * Two Events are equal if they have the same description, start time, and end time.
+     *
+     * @param obj the object to compare
+     * @return true if equal, false otherwise
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Event)) {
+            return false;
+        }
+        Event other = (Event) obj;
+        return desc.equals(other.desc) && from.equals(other.from) && to.equals(other.to);
+    }
+    /**
      * Returns a string representation of the event task, including its type,
      * completion status, description, and start/end times.
      *

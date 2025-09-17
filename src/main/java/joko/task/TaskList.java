@@ -111,4 +111,8 @@ public class TaskList {
     public int size() {
         return tasks.size();
     }
+
+    public boolean contains(Task t) {
+        return tasks.contains(t); // tasks is your internal List<Task>
+    }
 }
