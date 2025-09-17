@@ -11,12 +11,10 @@ import joko.task.TaskList;
 import joko.task.ToDo;
 
 /**
- * A wrapper class for the Joko logic to be used in a GUI environment.
+ * A wrapper class for the Joko logic in a GUI context.
  * <p>
- * This class processes user commands and returns string responses
- * instead of printing them directly to the console.
- * It handles task operations such as adding, deleting, marking/unmarking,
- * listing, and finding tasks.
+ * Processes user commands and returns string responses instead of printing to console.
+ * Handles task operations: add, delete, mark/unmark, list, and find.
  * </p>
  */
 public class GuiJoko {
@@ -30,7 +28,7 @@ public class GuiJoko {
     /**
      * Constructs a new {@code GuiJoko} instance.
      * <p>
-     * Initializes the GUI interface and loads tasks from storage.
+     * Initializes the UI handler and loads tasks from storage.
      * </p>
      */
     public GuiJoko() {
@@ -40,104 +38,120 @@ public class GuiJoko {
     }
 
     /**
-     * Processes a user command and returns the response as a string.
-     * <p>
-     * Supported commands include:
-     * <ul>
-     *     <li>bye</li>
-     *     <li>list</li>
-     *     <li>mark/unmark</li>
-     *     <li>todo/deadline/event</li>
-     *     <li>delete</li>
-     *     <li>find</li>
-     * </ul>
-     * </p>
+     * Processes a user command and returns the response string.
      *
-     * @param input the command input string from the user
-     * @return the response string after executing the command, or an error message if failed
+     * @param input raw user input
+     * @return the response string or error message
      */
     public String getResponse(String input) {
         assert input != null && !input.trim().isEmpty() : "User input must not be null/empty";
         String commandType = Parser.getCommandType(input);
+
         try {
-            switch (commandType) {
-            case "bye":
-                return "Bye. Hope to see you again soon!";
-
-            case "list":
-                return guiUi.showTaskList(taskList.getTasks());
-
-            case "mark":
-            case "unmark": {
-                Parser.Command cmd = Parser.parseIndexCommand(input, commandType);
-                assert cmd.index >= 0 : "Parsed index must not be negative";
-                Task t = taskList.markTask(cmd.index, commandType.equals("mark"));
-                return guiUi.showTaskMarked(t, commandType.equals("mark"));
-            }
-
-            case "todo":
-            case "deadline":
-            case "event": {
-                Parser.Command cmd;
-                switch (commandType) {
-                case "todo":
-                    cmd = Parser.parseTodo(input);
-                    break;
-                case "deadline":
-                    cmd = Parser.parseDeadline(input);
-                    break;
-                default:
-                    cmd = Parser.parseEvent(input);
-                    break;
-                }
-
-                Task newTask;
-                switch (cmd.type) {
-                case "todo":
-                    assert cmd.desc != null && !cmd.desc.isEmpty() : "Todo must have a description";
-                    newTask = new ToDo(cmd.desc);
-                    break;
-                case "deadline":
-                    assert cmd.by != null : "Deadline must have a /by date";
-                    newTask = new Deadline(cmd.desc, cmd.by);
-                    break;
-                default:
-                    assert cmd.from != null && cmd.to != null : "Event must have /from and /to dates";
-                    newTask = new Event(cmd.desc, cmd.from, cmd.to);
-                    break;
-                }
-
-                taskList.addTask(newTask);
-                return guiUi.showTaskAdded(newTask, taskList.size());
-            }
-
-            case "delete": {
-                Parser.Command cmd = Parser.parseIndexCommand(input, "delete");
-                Task removed = taskList.deleteTask(cmd.index);
-                return guiUi.showTaskDeleted(removed, taskList.size());
-            }
-
-            case "find": {
-                Parser.Command cmd = Parser.parseFind(input);
-                ArrayList<Task> found = taskList.findTasks(cmd.desc);
-                return guiUi.showFoundTasks(found);
-            }
-
-            default:
-                return "Sorry, I could not understand your command :(";
-            }
+            return switch (commandType) {
+            case "bye" -> "Bye. Hope to see you again soon!";
+            case "list" -> guiUi.showTaskList(taskList.getTasks());
+            case "mark", "unmark" -> handleMarkUnmark(input, commandType);
+            case "todo", "deadline", "event" -> handleAddTask(input, commandType);
+            case "delete" -> handleDeleteTask(input);
+            case "find" -> handleFindTask(input);
+            default -> "Sorry, I could not understand your command :(";
+            };
         } catch (Exception e) {
             return "Error: " + e.getMessage();
         }
     }
 
     /**
-     * Returns the welcome message for the GUI.
-     * <p>
-     * Typically called when the GUI is initialized to show the user a greeting.
-     * </p>
+     * Handles {@code mark} and {@code unmark} commands.
      *
-     * @return a string representing the welcome message
+     * @param input the raw user input
+     * @param commandType either "mark" or "unmark"
+     * @return the formatted response string
+     */
+    private String handleMarkUnmark(String input, String commandType) {
+        Parser.Command cmd = Parser.parseIndexCommand(input, commandType);
+        assert cmd.index >= 0 : "Parsed index must not be negative";
+        boolean isMark = commandType.equals("mark");
+        Task task = taskList.markTask(cmd.index, isMark);
+        return guiUi.showTaskMarked(task, isMark);
+    }
+
+    /**
+     * Handles {@code todo}, {@code deadline}, and {@code event} commands.
+     *
+     * @param input the raw user input
+     * @param commandType the type of task to add
+     * @return the formatted response string
+     */
+    private String handleAddTask(String input, String commandType) {
+        Parser.Command cmd = parseCommandByType(input, commandType);
+        Task newTask = createTaskFromCommand(cmd);
+        taskList.addTask(newTask);
+        return guiUi.showTaskAdded(newTask, taskList.size());
+    }
+
+    /**
+     * Parses the input into a {@link Parser.Command} according to the task type.
+     *
+     * @param input the raw user input
+     * @param type the command type (todo, deadline, event)
+     * @return the parsed command
+     * @throws IllegalArgumentException if the command type is invalid
+     */
+    private Parser.Command parseCommandByType(String input, String type) {
+        return switch (type) {
+        case "todo" -> Parser.parseTodo(input);
+        case "deadline" -> Parser.parseDeadline(input);
+        case "event" -> Parser.parseEvent(input);
+        default -> throw new IllegalArgumentException("Unknown command type: " + type);
+        };
+    }
+
+    /**
+     * Creates a {@link Task} instance from a parsed {@link Parser.Command}.
+     *
+     * @param cmd the parsed command containing task details
+     * @return the created {@code Task}
+     * @throws IllegalArgumentException if the task type is invalid
+     */
+    private Task createTaskFromCommand(Parser.Command cmd) {
+        return switch (cmd.type) {
+        case "todo" -> new ToDo(cmd.desc);
+        case "deadline" -> new Deadline(cmd.desc, cmd.by);
+        case "event" -> new Event(cmd.desc, cmd.from, cmd.to);
+        default -> throw new IllegalArgumentException("Unknown task type: " + cmd.type);
+        };
+    }
+
+    /**
+     * Handles the {@code delete} command.
+     *
+     * @param input the raw user input
+     * @return the formatted response string
+     */
+    private String handleDeleteTask(String input) {
+        Parser.Command cmd = Parser.parseIndexCommand(input, "delete");
+        Task removed = taskList.deleteTask(cmd.index);
+        return guiUi.showTaskDeleted(removed, taskList.size());
+    }
+
+    /**
+     * Handles the {@code find} command.
+     *
+     * @param input the raw user input
+     * @return the formatted response string
+     */
+    private String handleFindTask(String input) {
+        Parser.Command cmd = Parser.parseFind(input);
+        ArrayList<Task> found = taskList.findTasks(cmd.desc);
+        return guiUi.showFoundTasks(found);
+    }
+
+    /**
+     * Returns the welcome message for display in the GUI.
+     *
+     * @return the welcome message
      */
     public String getWelcomeMessage() {
         return guiUi.showWelcome(taskList.getTasks());

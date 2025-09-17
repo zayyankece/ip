@@ -1,5 +1,4 @@
 T | 1 | swim
-T | 0 | eat swim
+T | 1 | eat swim
 T | 0 | run
 E | 0 | drink | 8pm | 2pm
-E | 0 | eat | 18-09-2025 | 19-09-2025
