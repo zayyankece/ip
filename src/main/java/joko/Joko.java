@@ -19,12 +19,11 @@ import joko.ui.Ui;
  */
 public class Joko {
 
-
     /**
      * The entry point of the Joko application.
      *
-     * <p>It initializes the user interface and storage, loads tasks, and
-     * enters a loop to process user commands until the "bye" command is received.</p>
+     * <p>It initializes the UI and storage, loads tasks, runs the main program loop,
+     * and closes the UI when the user exits.</p>
      *
      * @param args command-line arguments (not used)
      */
@@ -34,7 +33,11 @@ public class Joko {
         TaskList taskList = new TaskList(storage.loadTasks(), storage);
 
         ui.showWelcome(taskList.getTasks());
+        runMainLoop(ui, taskList);
+        ui.close();
+    }
 
+    private static void runMainLoop(Ui ui, TaskList taskList) {
         while (true) {
             String input = ui.readCommand();
             String commandType = Parser.getCommandType(input);
@@ -42,75 +45,76 @@ public class Joko {
             if (commandType.equals("bye")) {
                 ui.showMessage("Bye. Hope to see you again soon!");
                 break;
+            }
 
-            } else if (commandType.equals("list")) {
-                ui.showTaskList(taskList.getTasks());
-
+            if (commandType.equals("list")) {
+                handleList(taskList, ui);
             } else if (commandType.equals("mark") || commandType.equals("unmark")) {
-                try {
-                    Parser.Command cmd = Parser.parseIndexCommand(input, commandType);
-                    Task t = taskList.markTask(cmd.index, commandType.equals("mark"));
-                    ui.showTaskMarked(t, commandType.equals("mark"));
-                } catch (Exception e) {
-                    ui.showMessage("Please type a valid input: <mark/unmark> <task number>");
-                }
-
+                handleMarkUnmark(input, commandType, taskList, ui);
             } else if (commandType.equals("todo") || commandType.equals("deadline") || commandType.equals("event")) {
-                try {
-                    Parser.Command cmd;
-                    switch (commandType) {
-                    case "todo":
-                        cmd = Parser.parseTodo(input);
-                        break;
-                    case "deadline":
-                        cmd = Parser.parseDeadline(input);
-                        break;
-                    case "event":
-                        cmd = Parser.parseEvent(input);
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Unknown command type");
-                    }
-
-                    Task newTask = null;
-
-                    switch (cmd.type) {
-                    case "todo":
-                        newTask = new ToDo(cmd.desc);
-                        break;
-                    case "deadline":
-                        newTask = new Deadline(cmd.desc, cmd.by);
-                        break;
-                    default:
-                        newTask = new Event(cmd.desc, cmd.from, cmd.to);
-                        break;
-                    }
-
-                    taskList.addTask(newTask);
-                    ui.showTaskAdded(newTask, taskList.size());
-                } catch (Exception e) {
-                    ui.showMessage("Error adding task: " + e.getMessage());
-                }
-
+                handleAddTask(input, commandType, taskList, ui);
             } else if (commandType.equals("delete")) {
-                try {
-                    Parser.Command cmd = Parser.parseIndexCommand(input, "delete");
-                    Task removed = taskList.deleteTask(cmd.index);
-                    ui.showTaskDeleted(removed, taskList.size());
-                } catch (Exception e) {
-                    ui.showMessage("Please type a valid input: <delete> <task number>");
-                }
-
+                handleDelete(input, taskList, ui);
             } else if (commandType.equals("find")) {
-                Parser.Command cmd = Parser.parseFind(input);
-                ui.showFoundTasks(taskList.findTasks(cmd.desc));
-
+                handleFind(input, taskList, ui);
             } else {
                 ui.showMessage("Sorry, I could not understand your command :(");
             }
         }
-
-        ui.close();
     }
 
+    private static void handleList(TaskList taskList, Ui ui) {
+        ui.showTaskList(taskList.getTasks());
+    }
+
+    private static void handleMarkUnmark(String input, String commandType, TaskList taskList, Ui ui) {
+        try {
+            Parser.Command cmd = Parser.parseIndexCommand(input, commandType);
+            Task task = taskList.markTask(cmd.index, commandType.equals("mark"));
+            ui.showTaskMarked(task, commandType.equals("mark"));
+        } catch (Exception e) {
+            ui.showMessage("Please type a valid input: <mark/unmark> <task number>");
+        }
+    }
+
+    private static void handleAddTask(String input, String commandType, TaskList taskList, Ui ui) {
+        try {
+            Parser.Command cmd = switch (commandType) {
+            case "todo" -> Parser.parseTodo(input);
+            case "deadline" -> Parser.parseDeadline(input);
+            case "event" -> Parser.parseEvent(input);
+            default -> throw new IllegalArgumentException("Unknown command type");
+            };
+
+            Task newTask = switch (cmd.type) {
+            case "todo" -> new ToDo(cmd.desc);
+            case "deadline" -> new Deadline(cmd.desc, cmd.by);
+            default -> new Event(cmd.desc, cmd.from, cmd.to);
+            };
+
+            taskList.addTask(newTask);
+            ui.showTaskAdded(newTask, taskList.size());
+        } catch (Exception e) {
+            ui.showMessage("Error adding task: " + e.getMessage());
+        }
+    }
+
+    private static void handleDelete(String input, TaskList taskList, Ui ui) {
+        try {
+            Parser.Command cmd = Parser.parseIndexCommand(input, "delete");
+            Task removed = taskList.deleteTask(cmd.index);
+            ui.showTaskDeleted(removed, taskList.size());
+        } catch (Exception e) {
+            ui.showMessage("Please type a valid input: <delete> <task number>");
+        }
+    }
+
+    private static void handleFind(String input, TaskList taskList, Ui ui) {
+        try {
+            Parser.Command cmd = Parser.parseFind(input);
+            ui.showFoundTasks(taskList.findTasks(cmd.desc));
+        } catch (Exception e) {
+            ui.showMessage("Please provide a valid keyword to find.");
+        }
+    }
 }
