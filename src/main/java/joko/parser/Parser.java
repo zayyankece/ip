@@ -89,6 +89,7 @@ public class Parser {
      * @return the command type in lowercase
      */
     public static String getCommandType(String input) {
+        assert input != null && !input.isEmpty() : "Input must not be null or empty";
         return input.split(" ")[0].toLowerCase();
     }
 
@@ -101,11 +102,13 @@ public class Parser {
      * @throws NumberFormatException if the index is missing or invalid
      */
     public static Command parseIndexCommand(String input, String type) throws NumberFormatException {
+        assert input != null && !input.isEmpty() : "Input must not be null/empty for index command";
         String[] parts = input.split(" ", 2);
         if (parts.length < 2) {
             throw new NumberFormatException("Missing task number");
         }
         int index = Integer.parseInt(parts[1].trim()) - 1;
+        assert index >= 0 : "Parsed index must be zero or positive";
         return new Command(type, index);
     }
 

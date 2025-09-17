@@ -25,6 +25,10 @@ public class DialogBox extends HBox {
     private ImageView displayPicture = new ImageView();
 
     private DialogBox(String text, Image img) {
+        assert text != null : "Dialog text should not be null";
+        assert img != null : "Dialog image should not be null";
+
+
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(MainWindow.class.getResource("/view/DialogBox.fxml"));
             fxmlLoader.setController(this);
@@ -33,6 +37,9 @@ public class DialogBox extends HBox {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        assert dialog != null : "FXML failed to inject Label into DialogBox";
+        assert displayPicture != null : "FXML failed to inject ImageView into DialogBox";
 
         dialog.setText(text);
         displayPicture.setImage(img);
@@ -43,6 +50,9 @@ public class DialogBox extends HBox {
      */
     private void flip() {
         ObservableList<Node> tmp = FXCollections.observableArrayList(this.getChildren());
+        assert !tmp.isEmpty() : "DialogBox children should not be empty when flipping";
+
+
         Collections.reverse(tmp);
         getChildren().setAll(tmp);
         setAlignment(Pos.TOP_LEFT);

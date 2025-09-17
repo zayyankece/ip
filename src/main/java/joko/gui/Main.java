@@ -18,11 +18,22 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/view/MainWindow.fxml"));
+            var resource = Main.class.getResource("/view/MainWindow.fxml");
+            assert resource != null : "MainWindow.fxml not found in /view/";
+
+            FXMLLoader fxmlLoader = new FXMLLoader(resource);
             AnchorPane ap = fxmlLoader.load();
+            assert ap != null : "FXML root should not be null after loading.";
+
             Scene scene = new Scene(ap);
             stage.setScene(scene);
-            fxmlLoader.<MainWindow>getController().setGuiJoko(guiJoko);
+
+            MainWindow controller = fxmlLoader.getController();
+            assert controller != null : "Controller should not be null after FXML load.";
+
+            assert guiJoko != null : "GuiJoko should be initialized before injection.";
+            controller.setGuiJoko(guiJoko);
+
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();

@@ -57,8 +57,8 @@ public class GuiJoko {
      * @return the response string after executing the command, or an error message if failed
      */
     public String getResponse(String input) {
+        assert input != null && !input.trim().isEmpty() : "User input must not be null/empty";
         String commandType = Parser.getCommandType(input);
-
         try {
             switch (commandType) {
             case "bye":
@@ -70,6 +70,7 @@ public class GuiJoko {
             case "mark":
             case "unmark": {
                 Parser.Command cmd = Parser.parseIndexCommand(input, commandType);
+                assert cmd.index >= 0 : "Parsed index must not be negative";
                 Task t = taskList.markTask(cmd.index, commandType.equals("mark"));
                 return guiUi.showTaskMarked(t, commandType.equals("mark"));
             }
@@ -93,12 +94,15 @@ public class GuiJoko {
                 Task newTask;
                 switch (cmd.type) {
                 case "todo":
+                    assert cmd.desc != null && !cmd.desc.isEmpty() : "Todo must have a description";
                     newTask = new ToDo(cmd.desc);
                     break;
                 case "deadline":
+                    assert cmd.by != null : "Deadline must have a /by date";
                     newTask = new Deadline(cmd.desc, cmd.by);
                     break;
                 default:
+                    assert cmd.from != null && cmd.to != null : "Event must have /from and /to dates";
                     newTask = new Event(cmd.desc, cmd.from, cmd.to);
                     break;
                 }
