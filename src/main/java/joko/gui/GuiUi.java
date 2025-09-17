@@ -53,6 +53,7 @@ public class GuiUi {
      * @return the formatted message
      */
     public String showMessage(String message) {
+        assert message != null : "Message must not be null in showMessage";
         return message;
     }
 
@@ -64,6 +65,8 @@ public class GuiUi {
      * @return the formatted message
      */
     public String showTaskAdded(Task task, int size) {
+        assert task != null : "Task must not be null when added";
+        assert size >= 0 : "Task list size must not be negative";
         return "Got it. I've added this task:\n  " + task
                 + "\nNow you have " + size + " tasks in the list.";
     }
@@ -76,6 +79,8 @@ public class GuiUi {
      * @return the formatted message
      */
     public String showTaskDeleted(Task task, int size) {
+        assert task != null : "Task must not be null when deleted";
+        assert size >= 0 : "Task list size must not be negative";
         return "Noted. I've removed this task:\n  " + task
                 + "\nNow you have " + size + " tasks in the list.";
     }
@@ -88,6 +93,7 @@ public class GuiUi {
      * @return the formatted message
      */
     public String showTaskMarked(Task task, boolean isDone) {
+        assert task != null : "Task must not be null when marked/unmarked";
         if (isDone) {
             return "Nice! I've marked this task as done:\n  " + task;
         } else {

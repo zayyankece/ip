@@ -72,7 +72,7 @@ public class Joko {
                         throw new IllegalArgumentException("Unknown command type");
                     }
 
-                    Task newTask = null;
+                    Task newTask;
 
                     switch (cmd.type) {
                     case "todo":
