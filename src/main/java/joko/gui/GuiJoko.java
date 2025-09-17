@@ -19,7 +19,10 @@ import joko.task.ToDo;
  */
 public class GuiJoko {
 
+    /** The GUI interface used to format responses. */
     private final GuiUi guiUi;
+
+    /** The task list storing all tasks and interacting with storage. */
     private final TaskList taskList;
 
     /**
@@ -41,6 +44,7 @@ public class GuiJoko {
      * @return the response string or error message
      */
     public String getResponse(String input) {
+        assert input != null && !input.trim().isEmpty() : "User input must not be null/empty";
         String commandType = Parser.getCommandType(input);
 
         try {
@@ -67,6 +71,7 @@ public class GuiJoko {
      */
     private String handleMarkUnmark(String input, String commandType) {
         Parser.Command cmd = Parser.parseIndexCommand(input, commandType);
+        assert cmd.index >= 0 : "Parsed index must not be negative";
         boolean isMark = commandType.equals("mark");
         Task task = taskList.markTask(cmd.index, isMark);
         return guiUi.showTaskMarked(task, isMark);

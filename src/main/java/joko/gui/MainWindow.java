@@ -29,7 +29,6 @@ public class MainWindow extends AnchorPane {
 
     private Image userImage = new Image(this.getClass().getResourceAsStream("/images/Zayyan.jpeg"));
     private Image dukeImage = new Image(this.getClass().getResourceAsStream("/images/Anomali.jpeg"));
-
     /**
      * Initializes the controller.
      * <p>
@@ -39,6 +38,11 @@ public class MainWindow extends AnchorPane {
      */
     @FXML
     public void initialize() {
+        assert scrollPane != null : "ScrollPane must be injected by FXML";
+        assert dialogContainer != null : "DialogContainer must be injected by FXML";
+        assert userInput != null : "UserInput must be injected by FXML";
+        assert sendButton != null : "SendButton must be injected by FXML";
+
         guiJoko = new GuiJoko();
         scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
     }
@@ -52,7 +56,12 @@ public class MainWindow extends AnchorPane {
      * @param j the {@code GuiJoko} instance to set
      */
     public void setGuiJoko(GuiJoko j) {
+        assert j != null : "GuiJoko instance must not be null";
         guiJoko = j;
+
+        String welcomeMessage = guiJoko.getWelcomeMessage();
+        assert welcomeMessage != null : "Welcome message must not be null";
+
         dialogContainer.getChildren().add(
                 DialogBox.getJokoDialog(guiJoko.getWelcomeMessage(), dukeImage)
         );
@@ -72,7 +81,11 @@ public class MainWindow extends AnchorPane {
     @FXML
     private void handleUserInput() {
         String input = userInput.getText();
+        assert input != null : "User input should never be null";
+
         String response = guiJoko.getResponse(input);
+        assert response != null : "Response from GuiJoko should never be null";
+
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),
                 DialogBox.getJokoDialog(response, dukeImage)

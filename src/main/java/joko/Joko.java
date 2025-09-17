@@ -19,6 +19,7 @@ import joko.ui.Ui;
  */
 public class Joko {
 
+
     /**
      * The entry point of the Joko application.
      *
