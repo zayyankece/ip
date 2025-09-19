@@ -2,6 +2,7 @@ package joko.task;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 /**
  * Represents a task that has a specific deadline.
@@ -60,7 +61,7 @@ public class Deadline extends Task {
      */
     @Override
     public String toString() {
-        DateTimeFormatter outputFormat = DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm");
+        DateTimeFormatter outputFormat = DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm", Locale.ENGLISH);
         return "[D]" + super.toString()
                 + "(by: " + by.format(outputFormat) + ") ";
     }
