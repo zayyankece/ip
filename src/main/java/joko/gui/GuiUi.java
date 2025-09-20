@@ -21,8 +21,6 @@ public class GuiUi {
      */
     public String showWelcome(ArrayList<Task> tasks) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Hello! I'm Joko\n");
-        sb.append("What can I do for you?\n");
         sb.append(showTaskList(tasks));
         return sb.toString();
     }
