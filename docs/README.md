@@ -1,5 +1,7 @@
 # Joko Chatbot – User Guide
 
+![UI Screenshot](Ui.png)
+
 Welcome to **Joko**, your friendly chatbot assistant.
 This guide will help you get started and make the most out of Joko.
 
